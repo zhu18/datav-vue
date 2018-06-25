@@ -15,7 +15,7 @@ body, html {
 // 多选框样式 兼容性 IE9+
 input[type=checkbox],
 input[type=radio] {
-  display: none;
+  /* display: none; */
 }
 
 i.checkbox {

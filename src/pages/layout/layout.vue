@@ -52,7 +52,7 @@
     transform: translateX(0);
   }
   .content.exp-right .content-right{
-    width:300px;
+    width:250px;
     transform: translateX(0);
   }
 

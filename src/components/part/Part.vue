@@ -1,90 +1,102 @@
 <template>
   <div :id="id" :class="typeClass" v-drag="onDrag" v-resizable="onResize"
        :style="{top:$self.top+'px', left:$self.left+'px', width:$self.width +'px', height:$self.height +'px'}"
-       @mousedown.prevent.self="onSelected">
+       @mousedown.prevent="onSelected">
     <div class='opt'>
       <div class='clone'><i class='iconfont icon-clone' title='复制' @click.prevent.self="clone"></i></div>
       <div class='del'><i class='iconfont icon-close' title='删除' @click.prevent.self="remove"></i></div>
     </div>
-    <div :id="id+'_content'" ></div>
+
+    <slot></slot>
+
   </div>
 </template>
 
 <script>
   import store from '@/store'
   import { mapGetters } from 'vuex'
+  import Vue from 'vue'
   import PartServer from '@/components/part/PartServer.js'
 
-  export default{
+  export default {
     props: ['pId', 'pType'],
-    data() {
-      return {
-        //组件类型
+    option(){
+      return{
+        name: '基础组件',
         type: 'part',
-        run: false,
+        selected: false,
+        top: 0,
+        left: 0,
+        width: 400,
+        height: 400,
       }
     },
-    render(h) {
-      return h('div', {
-        class: this.typeClass,
-        attrs: {id: this.id},
-        style: {
-          top: this.$self.top + 'px',
-          left: this.$self.left + 'px',
-          width: this.$self.width + 'px',
-          height: this.$self.height + 'px'
-        },
-        directives: [{
-          name: 'drag',
-          value: this.onDrag,
-        }, {
-          name: 'resizable',
-          value: this.onResize,
-        }],
-        on: {
-          click: (e) => {
-            e.preventDefault()
-            this.onSelected()
-            return false
-          }
-        }
+    data() {
+      return {
 
-      }, [
-        // part=>opt
-        h('div', {
-          class: 'opt'
-        }, [
-          // part=>opt=>clone
-          h('div', {class: 'clone'}, [
-            // part=>opt=>icon-clone
-            h('i', {
-              class: 'iconfont icon-clone', on: {
-                click: (e) => {
-                  e.preventDefault()
-                  this.clone()
-                  return false
-                }
-              }
-            })
-          ]),
-          // part=>opt=>del
-          h('div', {class: 'del'}, [
-            // part=>opt=>icon-close
-            h('i', {
-              class: 'iconfont icon-close', on: {
-                click: (e) => {
-                  e.preventDefault()
-                  this.remove()
-                  return false
-                }
-              }
-            })
-          ]),
-        ]),
-        // part=>content
-        this.partRender(h)
-      ])
+      }
     },
+    /*render(h) {
+     return h('div', {
+     class: this.typeClass,
+     attrs: {id: this.id},
+     style: {
+     top: this.$self.top + 'px',
+     left: this.$self.left + 'px',
+     width: this.$self.width + 'px',
+     height: this.$self.height + 'px'
+     },
+     directives: [{
+     name: 'drag',
+     value: this.onDrag,
+     }, {
+     name: 'resizable',
+     value: this.onResize,
+     }],
+     on: {
+     click: (e) => {
+     e.preventDefault()
+     this.onSelected()
+     return false
+     }
+     }
+
+     }, [
+     // part=>opt
+     h('div', {
+     class: 'opt'
+     }, [
+     // part=>opt=>clone
+     h('div', {class: 'clone'}, [
+     // part=>opt=>icon-clone
+     h('i', {
+     class: 'iconfont icon-clone', on: {
+     click: (e) => {
+     e.preventDefault()
+     this.clone()
+     return false
+     }
+     }
+     })
+     ]),
+     // part=>opt=>del
+     h('div', {class: 'del'}, [
+     // part=>opt=>icon-close
+     h('i', {
+     class: 'iconfont icon-close', on: {
+     click: (e) => {
+     e.preventDefault()
+     this.remove()
+     return false
+     }
+     }
+     })
+     ]),
+     ]),
+     // part=>content
+     this.partRender(h)
+     ])
+     },*/
     computed: {
       // 得到已选中组件
       ...mapGetters(['viewZoom', 'selectedPart']),
@@ -93,6 +105,10 @@
       },
       name() {
         return this.$self.name
+      },
+      type() {
+        // PartChartPie => part.chart.pie
+        return this.pType.replace(/([A-Z])/g, (s) => '.' + s.toLowerCase()).replace(/^\./, '')
       },
       typeClass() {
         return this.type.replace(/\./g, ' ') + ' ' + (this.isSelected ? 'selected' : '');
@@ -105,32 +121,67 @@
       }
     },
     created() {
-      this.$nextTick(() => {
-        console.log('---part-next--created');
-      })
-      console.log('---part--created');
+
     },
     mounted() {
       this.$nextTick(() => {
 
       })
-
-      console.log('---part--mounted id:' + this.id + ' type:' + this.pType);
     },
     methods: {
+      /**
+       * setting:{style,data,event}
+       *
+       */
+      settingPanel(part, setting) {
+        this.setting = setting
+        let p_style = this.setting.style
+        let p_data = this.setting.data
+        let p_event = this.setting.event
+
+        //style
+        let g_base = p_style.addFolder('基础属性')
+        g_base.add(part, 'id').name('标识')
+        g_base.add(part, 'name').name('名称')
+        g_base.add(part, 'type').name('类型')
+        g_base.add(part, 'top', 100, 1000).name('顶部').onChange((v) => {
+          PartServer.updatePart({id: this.id, top: v})
+        })
+        g_base.add(part, 'left', 100, 1000).name('左边').onChange((v) => {
+          PartServer.updatePart({id: this.id, left: v})
+        })
+        g_base.add(part, 'width', 100, 1000).name('宽度').onChange((v) => {
+          PartServer.updatePart({id: this.id, width: v})
+          this.$emit('resize')
+        })
+        g_base.add(part, 'height', 100, 1000).name('高度').onChange((v) => {//onFinishChange
+          PartServer.updatePart({id: this.id, height: v})
+          this.$emit('resize')
+        })
+        g_base.open()
+        //data
+
+        //event
+      },
       onDrag(val) {
         PartServer.updatePart({id: this.id, top: val.y, left: val.x})
       },
       onResize(val) {
-        PartServer.updatePart({id: this.id, ...val})
+        if (val.isDone) {
+          this.$emit('resize')
+        }
+        else {
+          PartServer.updatePart({id: this.id, ...val})
+        }
       },
       onSelected(e) {
         if (this.selectedPart && this.id != this.selectedPart.id) {
-          //this.$store.commit('UPDATE_PART', {id: this.selectedPart.id, selected: false})
           PartServer.updatePart({id: this.selectedPart.id, selected: false})
         }
         PartServer.updatePart({id: this.id, selected: true})
-        //this.$store.commit('UPDATE_PART', {id: this.id, selected: true})
+        let setting = PartServer.createSetting()
+        let part = PartServer.getPartById(this.id)
+        this.$emit('selected', {part:part, setting: setting})
       },
       remove() {
         //this.$store.commit('DEL_PART', {id: this.id})
@@ -180,7 +231,7 @@
               } else if (t <= yMin) {
                 t = yMin
               }
-              console.log('l:' + l + ',t:' + t)
+              //console.log('l:' + l + ',t:' + t)
               //移动当前元素
               oDiv.style.left = l + 'px'
               oDiv.style.top = t + 'px'
@@ -273,6 +324,8 @@
     }
 
     document.onmouseup = function () {
+      //完成标识
+      binding.value({isDone: true})
       //取消鼠标跟随
       document.onmousemove = null
       document.onmouseup = null
@@ -282,6 +335,115 @@
         controls[i].style.left = ''
         controls[i].style.top = ''
       }
+
     }
   }
 </script>
+<style>
+  .ui-resizable {
+    width: 400px;
+    height: 240px;
+    margin: 50px;
+    position: relative;
+  }
+
+  .resizable-r {
+    width: 10px;
+    height: 100%;
+    position: absolute;
+    right: 0;
+    top: 0;
+    cursor: e-resize;
+  }
+
+  .resizable-b {
+    width: 100%;
+    height: 10px;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    cursor: s-resize;
+  }
+
+  .resizable-rb {
+    width: 10px;
+    height: 10px;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    cursor: nw-resize;
+  }
+
+  /* 组件 */
+  .part {
+    width: 150px;
+    height: 100px;
+    position: absolute;
+    outline: 1px solid rgba(43, 183, 255, .8);
+  }
+
+  .part-title {
+    height: 20px;
+    border-bottom: 1px solid #aaa;
+    background: #eee;
+  }
+
+  .part.text {
+    width: 400px;
+    height: 100px;
+    font-size: 40px;
+    color: #fff;
+    text-align: center;
+  }
+
+  .part:hover {
+    background: rgba(43, 183, 255, .3);
+    z-index: 1000;
+  }
+
+  .part.selected {
+    background: rgba(228, 60, 89, .3);
+    outline: 2px solid rgb(228, 60, 89);
+    z-index: 999;
+  }
+
+  .part .opt {
+    visibility: hidden;
+    position: absolute;
+    top: -20px;
+    left: -2px;
+  }
+
+  .part .opt .clone, .part .opt .del {
+    width: 20px;
+    height: 20px;
+    float: left;
+    color: #fff;
+    font-size: 12px;
+    line-height: 20px;
+    cursor: pointer;
+    text-align: center;
+  }
+
+  .part .opt .clone:hover, .part .opt .del:hover {
+    opacity: .8;
+  }
+
+  .part:hover .opt {
+    visibility: visible;
+  }
+
+  .part.selected:hover .opt {
+    background: rgb(228, 60, 89);
+  }
+
+  .part:hover .opt {
+    background: rgb(43, 183, 255);
+  }
+
+  .part-content {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+  }
+</style>

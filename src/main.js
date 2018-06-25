@@ -9,13 +9,13 @@ import ElementUI from 'element-ui'
 import store from './store'
 import 'assets/css/index.scss'
 import 'element-ui/lib/theme-chalk/index.css'
-import 'jquery-ui'
+
 Vue.prototype.$echarts = echarts
 
 Vue.config.productionTip = false
 Vue.use(ElementUI)
 /* eslint-disable no-new */
-new Vue({
+window.app=new Vue({
   el: '#app',
   router,
   store,
