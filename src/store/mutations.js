@@ -11,6 +11,12 @@ export default {
   [types.SET_VIEWWIDTH](state, width) {
     state.viewWidth = width
   },
+  [types.SET_VIEWBACKGROUNDCOLOR](state, color) {
+    state.viewBackgroundColor = color
+  },
+  [types.SET_VIEWBACKGROUNDIMAGE](state, img) {
+    state.viewBackgroundImage = img
+  },
   [types.SET_VIEWZOOM](state, zoom) {
     state.viewZoom = zoom
   },
@@ -26,5 +32,8 @@ export default {
   },
   [types.SET_PARTS](state, parts) {
     state.parts = [...state.parts, ...parts]
-  }
+  },
+  ['SET_ALL'](state, val) {
+    state = {...state,...val}
+  },
 }

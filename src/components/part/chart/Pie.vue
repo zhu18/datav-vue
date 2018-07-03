@@ -1,12 +1,12 @@
 <template>
-  <Chart :p-id="this.pId" ref="parent" :p-type="this.pType" @resize="onResize" @selected="onSelected">
+  <Chart :p-id="this.pId" ref="parent" :p-type="this.pType" @stateChange="onStateChange" @resize="onResize" @selected="onSelected">
     <div :id="contentId" class="part-content"></div>
   </Chart>
 </template>
 
 <script>
   import Chart from './Chart.vue'
-  import ChartServer from '9cf-chart'
+  import Runtime from './Pie.run.js'
   import PartServer from '@/components/part/PartServer.js'
 
   export default{
@@ -17,6 +17,7 @@
         width:400,
         height:280,
         name: '饼图',
+        chartId:'112'
       }
     },
     // 设计时-左侧菜单组件呈现效果
@@ -29,19 +30,28 @@
       id() {
         return this.pId
       },
-      contentId(){
-        return PartServer.partContentId(this.id)
+      contentId() {
+        return this.$self.contentId
+      },
+      $self() {
+        return PartServer.getPartById(this.id)
       }
     },
     methods: {
       onResize() {
-        this.chart.resize();
         console.log('--pie--resized');
+        this.chart.resize();
       },
       onSelected(e) {
         //选中创建属性面板
         this.settingPanel(e.part,e.setting)
       },
+      onStateChange(part) {
+        console.log('--pie--stateChange')
+        try{this.chart.dispose()}catch (e){}
+        this.chart =  Runtime.run(part)
+      },
+      // 设计时-右侧菜单配置
       settingPanel(part, setting) {
         this.$refs.parent.settingPanel(part, setting)
         let p_style = setting.style
@@ -53,9 +63,15 @@
         for(let key in this.chartOption) {
           try{
           g_base.add(this.chartOption, key)
-          }catch(e){}
+          }catch(e) {}
         }
         g_base.open()
+
+        p_data.add(part, 'chartId').name('图表ID').onChange(()=>{
+          return false;
+        }).onFinishChange((v)=>{
+          PartServer.updatePart({id: this.id, chartId: v})
+        })
 
       }
     },
@@ -63,17 +79,8 @@
       console.log('---pie--created');
     },
     mounted() {
-      this.$nextTick(() => {
-        console.log('---pie-next--mounted');
-        this.chart = ChartServer.init({id:112, container: this.contentId})
-        setTimeout(()=>{
-          this.chartOption=this.chart.getOption()
-          this.chart.setOption({backgroundColor:'rgba(255,255,255,.3)'})
-        },2000)
-
-        //this.chart.setOption()
-
-      })
+        // 运行时-显示图表
+        this.chart = Runtime.run(this.$self)
       console.log('---pie--mounted');
     },
     components: {

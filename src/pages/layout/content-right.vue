@@ -30,16 +30,6 @@
       handleClick(tab, event) {
         console.log(tab, event)
       },
-//      ...mapMutations({
-//        setViewWidth: 'SET_VIEWWIDTH',
-//        setViewHeight: 'SET_VIEWHEIGHT'
-//      }),
-//      setViewSize(size) {
-//        size = size.split('*')
-//        this.setViewWidth(size[0])
-//        this.setViewHeight(size[1])
-//        console.log(size)
-//      },
 
     },
     mounted(){
@@ -56,6 +46,7 @@
     transition: all .3s;
     width: 0;
     transform: translateX(300px);
+    box-shadow: 0 0 10px rgba(0,0,0,.1);
   }
 
   .txt-xs, .txt-md {

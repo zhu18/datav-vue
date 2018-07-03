@@ -104,6 +104,7 @@
     width: 0;
     transform: translateX(-200px);
     z-index: 10;
+    box-shadow: 0 0 10px rgba(0,0,0,.1);
   }
 
   .part-list {

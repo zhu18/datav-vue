@@ -1,35 +1,30 @@
 <template>
-  <PartText :p-id="this.pId" ref="parent" :p-type="this.pType" @resize="onResize" @selected="onSelected">
-    <div :id="contentId" class="part-content" :style="{
-      verticalAlign:verticalAlign,
-      textAlign:textAlign,
-      fontSize:fontSize,
-      color:fontColor,
-      fontFamily:fontFamily
-    }">{{text}}
+  <PartText :p-id="this.pId" ref="parent" :p-type="this.pType" @stateChange="onStateChange" @resize="onResize" @selected="onSelected">
+    <div :id="contentId" class="part-content" >
     </div>
   </PartText>
 </template>
 
 <script>
   import PartText from './Text.vue'
+  import Runtime from './Title.run.js'
   import PartServer from '@/components/part/PartServer.js'
 
-  const E_fontFamily={
-    '微软雅黑':'Microsoft Yahei',
-    '新宋':'SimSun',
-    '幼圆':'YouYuan',
-    '黑体':'SimHei'
+  const E_fontFamily = {
+    '微软雅黑': 'Microsoft Yahei',
+    '新宋': 'SimSun',
+    '幼圆': 'YouYuan',
+    '黑体': 'SimHei'
   }
-  const E_textAlign={
-    '局左':'left',
-    '居中':'center',
-    '居右':'right'
+  const E_textAlign = {
+    '局左': 'left',
+    '居中': 'center',
+    '居右': 'right'
   }
-  const E_verticalAlign={
-    '局上':'top',
-    '居中':'middle',
-    '居下':'bottom'
+  const E_verticalAlign = {
+    '局上': 'top',
+    '居中': 'middle',
+    '居下': 'bottom'
   }
   export default{
     props: ['pId', 'pType'],
@@ -43,7 +38,7 @@
         left: 400,
         fontSize: 50,
         fontFamily: E_fontFamily['微软雅黑'],
-        fontColor: '#ffffff',
+        fontColor: 'rgba(255,255,255,1)',
         text: '请输入要显示的文字',
         textAlign: E_textAlign['居中'],
         verticalAlign: E_verticalAlign['居中'],
@@ -60,7 +55,7 @@
         return this.pId
       },
       contentId() {
-        return PartServer.partContentId(this.id)
+        return this.$self.contentId
       },
       $self() {
         return PartServer.getPartById(this.id)
@@ -74,13 +69,13 @@
       fontSize(){
         return parseInt(this.$self.fontSize) + 'px'
       },
-      fontFamily(){
+      fontFamily() {
         return this.$self.fontFamily
       },
-      textAlign(){
+      textAlign() {
         return this.$self.textAlign
       },
-      verticalAlign(){
+      verticalAlign() {
         return this.$self.verticalAlign
       }
     },
@@ -91,6 +86,9 @@
       onSelected(e) {
         //选中创建属性面板
         this.settingPanel(e.part, e.setting)
+      },
+      onStateChange(e){
+        Runtime.run(e)
       },
       settingPanel(part, setting) {
         this.$refs.parent.settingPanel(part, setting)
@@ -113,10 +111,10 @@
         g_font.addColor(part, 'fontColor').name('颜色').onChange((v) => {
           PartServer.updatePart({id: this.id, fontColor: v})
         })
-        g_font.add(part, 'textAlign',E_textAlign).name('水平对齐').onChange((v) => {
+        g_font.add(part, 'textAlign', E_textAlign).name('水平对齐').onChange((v) => {
           PartServer.updatePart({id: this.id, textAlign: v})
         })
-        g_font.add(part, 'verticalAlign',E_verticalAlign).name('垂直对齐').onChange((v) => {
+        g_font.add(part, 'verticalAlign', E_verticalAlign).name('垂直对齐').onChange((v) => {
           PartServer.updatePart({id: this.id, verticalAlign: v})
         })
 
@@ -129,6 +127,7 @@
       console.log('---title--created');
     },
     mounted() {
+      Runtime.run(this.$self)
       console.log('---title--mounted');
     },
     components: {

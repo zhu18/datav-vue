@@ -10,7 +10,7 @@
   </div>
 </template>
 <script>
-  import { mapMutations,mapState, mapGetters } from 'vuex'
+  import { mapMutations, mapState, mapGetters } from 'vuex'
   import PartServer from '@/components/part/PartServer.js'
 
   const E_viewSize = {
@@ -24,7 +24,8 @@
       return {
         viewSize: '',
         viewBackgroundColor: '#1a1a1a',
-        viewBackgroundImage: 'http://pic.qiantucdn.com/58pic/18/13/50/38N58PICTcD_1024.jpg'
+        viewBackgroundImage: 'http://pic.qiantucdn.com/58pic/18/13/50/38N58PICTcD_1024.jpg',
+        showGrid: true,
       }
     },
     computed: {
@@ -41,13 +42,16 @@
       viewSize(cur, old) {
         cur != old ? this.setViewSize(cur) : null
       },
-      viewBackgroundColor(cur, old) {
-        document.getElementById('view').style.backgroundColor = cur
+      viewBackgroundColor(cur, old){
+        this.setViewBackgroundColor(cur)
       },
-      viewBackgroundImage(cur, old) {
-        document.getElementById('view').style.backgroundImage = 'url(' + cur + ')'
+      viewBackgroundImage(cur, old){
+        this.setViewBackgroundImage(cur)
       },
-      isSelected(cur, old){
+      showGrid(cur, old) {
+        document.getElementById('canvas').style.display = cur ? 'block' : 'none'
+      },
+      isSelected(cur, old) {
         if (cur) {
           this.createViewSetting()
         }
@@ -56,7 +60,9 @@
     methods: {
       ...mapMutations({
         setViewWidth: 'SET_VIEWWIDTH',
-        setViewHeight: 'SET_VIEWHEIGHT'
+        setViewHeight: 'SET_VIEWHEIGHT',
+        setViewBackgroundColor: 'SET_VIEWBACKGROUNDCOLOR',
+        setViewBackgroundImage: 'SET_VIEWBACKGROUNDIMAGE'
       }),
       setViewSize(size) {
         size = size.split('*')
@@ -77,6 +83,10 @@
 
         viewWrap.style.transform = 'scale(' + zoomScale + ')'
       },
+      initBackground(){
+        this.setViewBackgroundColor(this.viewBackgroundColor)
+        this.setViewBackgroundImage(this.viewBackgroundImage)
+      },
       onViewSelected() {
         let part = PartServer.getSelectedPart()
         if (part) {
@@ -94,11 +104,14 @@
         g_base.add(this, 'viewSize', E_viewSize).name('画布尺寸')
         g_base.addColor(this, 'viewBackgroundColor').name('背景颜色')
         g_base.add(this, 'viewBackgroundImage').name('背景图片')
+        g_base.add(this, 'showGrid').name('显示网格').listen()
         g_base.open()
       }
     },
     mounted() {
+      this.viewSize = E_viewSize['1200*800'];
       this.initViewSize()
+      this.initBackground()
       this.createViewSetting()
 
       window.onresize = () => {
@@ -111,7 +124,7 @@
 
 </script>
 <style>
-  #view {
+  .view {
     overflow: hidden;
     height: 100%;
     position: absolute;
@@ -124,9 +137,20 @@
     background-position: center;
   }
 
-  #view.selected {
+  .view.selected {
     outline: 2px solid rgb(228, 60, 89);
   }
 
+  .view-mode .view{
+    top: 0;
+    left: 0;
+    right:0;
+    bottom:0;
+    margin: auto;
+    box-shadow: 0 0 20px #000;
+  }
+  .view-mode .view.selected {
+    outline:0
+  }
 
 </style>

@@ -1,13 +1,12 @@
 <template>
-  <Chart :p-id="this.pId" ref="parent" :p-type="this.pType" @resize="onResize" @selected="onSelected">
+  <Chart :p-id="this.pId" ref="parent" :p-type="this.pType" @stateChange="onStateChange" @resize="onResize" @selected="onSelected">
     <div :id="contentId" class="part-content"></div>
   </Chart>
 </template>
 <script>
   import Chart from './Chart.vue'
-  import ChartServer from '9cf-chart'
+  import Runtime from './Line.run.js'
   import PartServer from '@/components/part/PartServer.js'
-  import dat from 'dat.gui'
 
   export default{
     props: ['pId', 'pType'],
@@ -17,7 +16,7 @@
         name: '折线图',
         width: 300,
         height: 180,
-        line:['a','b','c']
+        chartId: '1589'
       }
     },
     // 设计时-左侧菜单组件呈现效果
@@ -35,6 +34,11 @@
         //选中创建属性面板
         this.settingPanel(e.part, e.setting)
       },
+      onStateChange(part) {
+        console.log('--line--stateChange')
+        try{this.chart.dispose()}catch (e){}
+        this.chart =  Runtime.run(part)
+      },
       settingPanel(part,setting) {
         this.$refs.parent.settingPanel(part,setting)
 
@@ -43,12 +47,13 @@
         let p_data = this.setting.data
         let p_event = this.setting.event
 
-        p_style.add(part,'line',part.line)
-        p_data.add(part,'type')
-        p_event.add(part,'type')
-
-
-
+        p_data.add(part, 'chartId').name('图表ID').onChange(()=>{
+          return false;
+        }).onFinishChange((v)=>{
+          PartServer.updatePart({id: this.id, chartId: v})
+          try{this.chart.dispose()}catch (e){}
+          this.chart =  Runtime.run(this.$self)
+        })
       }
     },
     computed: {
@@ -57,13 +62,16 @@
       },
       contentId(){
         return PartServer.partContentId(this.id)
+      },
+      $self() {
+        return PartServer.getPartById(this.id)
       }
     },
     created() {
       console.log('---line--created:' + this.pId + ',type:' + this.pType)
     },
     mounted() {
-      this.chart = ChartServer.init({id: 369, container: this.contentId})
+      this.chart=Runtime.run(this.$self)
       console.log('---line--mounted')
     },
     components: {

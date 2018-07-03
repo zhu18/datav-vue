@@ -1,5 +1,5 @@
 <template>
-  <Part :p-id="this.pId" ref="parent" :p-type="this.pType" @resize="onResize" @selected="onSelected">
+  <Part :p-id="this.pId" ref="parent" :p-type="this.pType" @stateChange="onStateChange" @resize="onResize" @selected="onSelected">
     <slot></slot>
   </Part>
 </template>
@@ -12,7 +12,6 @@
     option() {
       return {
         type: 'part.chart',
-        chart: 'chartdata',
       }
     },
     computed: {
@@ -31,6 +30,9 @@
       onSelected(e) {
         this.$emit('selected', e)
       },
+      onStateChange(e) {
+        this.$emit('stateChange', e)
+      },
       settingPanel(part, setting) {
         this.$refs.parent.settingPanel(part, setting)
         this.setting = setting
@@ -38,7 +40,6 @@
         let p_data = this.setting.data
         let p_event = this.setting.event
 
-        p_style.add(part,'type')
       }
 
     },

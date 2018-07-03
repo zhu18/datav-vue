@@ -2,6 +2,8 @@ const state = {
   themeCls: '',
   viewHeight: 1080,
   viewWidth: 1920,
+  viewBackgroundColor:'',
+  viewBackgroundImage:'',
   viewZoom:1,
   parts:[],
 }

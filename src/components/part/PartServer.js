@@ -1,7 +1,7 @@
 import store from '@/store'
 import * as mutationTypes from '@/store/mutation-types'
 import { $ } from '@/assets/js/common/extend.js'
-import dat from 'dat.gui'
+import dat from '@/assets/js/dat.gui.js'
 
 import Part from '@/components/part/Part.vue'
 // 图表
@@ -27,9 +27,12 @@ class PartServer {
       left: 0,
       width: 400,
       height: 400,
+      contentId: '',
+      zIndex: 0
     }
     part = $.extend(true, _opt, part)
     part = $.extend(true, part, partOpt)
+    part.contentId = PartServer.partContentId(part.id)
     console.log(part)
     return part
   }
@@ -158,12 +161,14 @@ class PartServer {
 
   // 复制组件
   static clonePart (part) {
+    let partId = PartServer.newPartId()
     let clonePart = {
       ...part,
-      id: PartServer.newPartId(),
+      id: partId,
       top: part.top + 10,
       left: part.left + 10,
       selected: false,
+      contentId: PartServer.partContentId(partId)
     }
     PartServer.addPart(clonePart)
     console.log('===复制组件:' + part.id)

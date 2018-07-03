@@ -19,7 +19,7 @@
     methods:{
       runtimeView(){
         localStorage['datav-last-page']=JSON.stringify(this.$store.state)
-        window.open('/static/view.html')
+        window.href='http://localhost:7070/view1.html'
       }
     }
   }

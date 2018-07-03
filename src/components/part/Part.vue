@@ -1,6 +1,16 @@
 <template>
   <div :id="id" :class="typeClass" v-drag="onDrag" v-resizable="onResize"
-       :style="{top:$self.top+'px', left:$self.left+'px', width:$self.width +'px', height:$self.height +'px'}"
+       :style="{
+    top:$self.top+'px',
+    left:$self.left+'px',
+    width:$self.width +'px',
+    height:$self.height +'px',
+    background:$self.background,
+    borderWidth:$self.borderWidth+'px',
+    borderColor:$self.borderColor,
+    borderStyle:$self.borderStyle,
+    borderRadius:$self.borderRadius+'px',
+    zIndex:$self.zIndex}"
        @mousedown.prevent="onSelected">
     <div class='opt'>
       <div class='clone'><i class='iconfont icon-clone' title='复制' @click.prevent.self="clone"></i></div>
@@ -13,15 +23,21 @@
 </template>
 
 <script>
+  import  {$}  from '@/assets/js/common/extend.js'
   import store from '@/store'
   import { mapGetters } from 'vuex'
   import Vue from 'vue'
   import PartServer from '@/components/part/PartServer.js'
 
+  const E_BorderRadius={
+    '实线':'solid',
+    '虚线':'dashed',
+    '点线':'dotted'
+  }
   export default {
     props: ['pId', 'pType'],
     option(){
-      return{
+      return {
         name: '基础组件',
         type: 'part',
         selected: false,
@@ -29,11 +45,12 @@
         left: 0,
         width: 400,
         height: 400,
-      }
-    },
-    data() {
-      return {
-
+        background:'rgba(0,0,0,0)',
+        borderWidth:0,
+        borderColor:'rgba(0,0,0,0)',
+        borderStyle:E_BorderRadius['实线'],
+        borderRadius:0,
+        zIndex:10,
       }
     },
     /*render(h) {
@@ -128,6 +145,39 @@
 
       })
     },
+    watch: {
+      $self(cur, old){
+        if(!cur.selected)return
+        // 位置变化,zIndex 忽略
+        if (cur.top !== old.top || cur.left !== old.left || cur.zIndex !== old.zIndex || cur.background !== old.background
+          || cur.borderWidth !== old.borderWidth || cur.borderColor !== old.borderColor || cur.borderStyle !== old.borderStyle|| cur.borderRadius !== old.borderRadius) {
+          return
+        }
+        // 选中状态改变触发 selected事件
+        if (cur.selected && cur.selected !== old.selected) {
+          let setting = PartServer.createSetting()
+          let part = PartServer.getPartById(this.id)
+          this.$emit('selected', {part: part, setting: setting})
+          return
+        }
+
+        // 大小改变触发 resize
+        if (cur.width !== old.width || cur.height !== old.height) {
+          if (this.resizeTimer) clearTimeout(this.resizeTimer);
+          this.resizeTimer = setTimeout(() => {
+            this.$emit('resize')
+          }, 300);
+          return
+        }
+
+        let isModf = !$.eq(cur, old)
+        // 其他属性改变触发 stateChange 组件重新绘制
+        if(isModf){
+          this.$emit('stateChange', cur)
+        }
+
+      }
+    },
     methods: {
       /**
        * setting:{style,data,event}
@@ -152,11 +202,28 @@
         })
         g_base.add(part, 'width', 100, 1000).name('宽度').onChange((v) => {
           PartServer.updatePart({id: this.id, width: v})
-          this.$emit('resize')
         })
         g_base.add(part, 'height', 100, 1000).name('高度').onChange((v) => {//onFinishChange
           PartServer.updatePart({id: this.id, height: v})
-          this.$emit('resize')
+        })
+        g_base.addColor(part, 'background').name('背景颜色').onChange((v) => {//onFinishChange
+          PartServer.updatePart({id: this.id, background: v})
+        })
+        g_base.add(part, 'borderWidth', 0, 5).name('边框宽度').onChange((v) => {//onFinishChange
+          PartServer.updatePart({id: this.id, borderWidth: parseInt(v)})
+        })
+        g_base.addColor(part, 'borderColor').name('边框颜色').onChange((v) => {//onFinishChange
+          PartServer.updatePart({id: this.id, borderColor: v})
+        })
+        g_base.add(part, 'borderStyle', E_BorderRadius).name('边框线条').onChange((v) => {//onFinishChange
+          PartServer.updatePart({id: this.id, borderStyle: v})
+        })
+        g_base.add(part, 'borderRadius', 0, 500).name('边框圆角').onChange((v) => {//onFinishChange
+          PartServer.updatePart({id: this.id, borderRadius: parseInt(v)})
+        })
+
+        g_base.add(part, 'zIndex', 10, 100).name('zIndex').onChange((v) => {
+          PartServer.updatePart({id: this.id, zIndex: parseInt(v)})
         })
         g_base.open()
         //data
@@ -164,24 +231,22 @@
         //event
       },
       onDrag(val) {
-        PartServer.updatePart({id: this.id, top: val.y, left: val.x})
+        if (this.$self.top !== val.y || this.$self.left !== val.x)
+          PartServer.updatePart({id: this.id, top: val.y, left: val.x})
       },
       onResize(val) {
-        if (val.isDone) {
-          this.$emit('resize')
-        }
-        else {
-          PartServer.updatePart({id: this.id, ...val})
-        }
+        PartServer.updatePart({id: this.id, ...val})
       },
       onSelected(e) {
-        if (this.selectedPart && this.id != this.selectedPart.id) {
+        if (this.selectedPart && this.id === this.selectedPart.id) {
+          return
+        }
+        if (this.selectedPart && this.id !== this.selectedPart.id) {
+          //还原之前已选中组件
           PartServer.updatePart({id: this.selectedPart.id, selected: false})
         }
+        // 选中当前组件
         PartServer.updatePart({id: this.id, selected: true})
-        let setting = PartServer.createSetting()
-        let part = PartServer.getPartById(this.id)
-        this.$emit('selected', {part:part, setting: setting})
       },
       remove() {
         //this.$store.commit('DEL_PART', {id: this.id})
@@ -324,8 +389,6 @@
     }
 
     document.onmouseup = function () {
-      //完成标识
-      binding.value({isDone: true})
       //取消鼠标跟随
       document.onmousemove = null
       document.onmouseup = null
@@ -375,11 +438,16 @@
   }
 
   /* 组件 */
+
   .part {
     width: 150px;
     height: 100px;
     position: absolute;
     outline: 1px solid rgba(43, 183, 255, .8);
+    box-sizing: border-box;
+  }
+  .view-mode .part{
+    outline:0;
   }
 
   .part-title {
@@ -407,6 +475,11 @@
     z-index: 999;
   }
 
+  .view-mode .part.selected{
+    background: rgba(228, 60, 89, 0);
+    outline: 0;
+  }
+
   .part .opt {
     visibility: hidden;
     position: absolute;
@@ -431,6 +504,9 @@
 
   .part:hover .opt {
     visibility: visible;
+  }
+  .view-mode .part:hover .opt{
+    visibility: hidden;
   }
 
   .part.selected:hover .opt {

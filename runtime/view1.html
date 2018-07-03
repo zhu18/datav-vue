@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link href="reset.css" rel="stylesheet" />
+    <link href="page.css" rel="stylesheet" />
+  <style>
+    #code{
+      height: 20vh;
+      width: 50vw;
+      margin: auto;
+      position: fixed;
+      top: -30%;
+      left: 0;
+      text-align: center;
+      right: 0;
+      bottom: 0;
+      box-shadow: 0 0 1250px rgba(0,0,0,.3), 0 0 100px 10px rgba(111, 220, 164, 0.3);
+    }
+  </style>
+</head>
+<body>
+  <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+  <input id="code" placeholder="请输入页面配置" multiple="multiple" onchange="initPage(this.value)" />
+  <script src="all.js"></script>
+<script>
+  $(function(){
+    var lastPage=localStorage['datav-last-page']
+    initPage(lastPage)
+  })
+   function initPage(opt){
+    var page = new Page({sizeEqualRatio:false})
+    page.init(JSON.parse(opt));
+    document.getElementById('code').remove()
+  }
+</script>
+</body>
+</html>

@@ -1,5 +1,5 @@
 <template>
-  <Part :p-id="this.pId" ref="parent" :p-type="this.pType" @resize="onResize" @selected="onSelected">
+  <Part :p-id="this.pId" ref="parent" :p-type="this.pType" @stateChange="onStateChange" @resize="onResize" @selected="onSelected">
     <slot></slot>
   </Part>
 </template>
@@ -27,15 +27,15 @@
       onSelected(e) {
         this.$emit('selected', e)
       },
+      onStateChange(e){
+        this.$emit('stateChange', e)
+      },
       settingPanel(part, setting) {
         this.$refs.parent.settingPanel(part, setting)
         this.setting = setting
         let p_style = this.setting.style
         let p_data = this.setting.data
         let p_event = this.setting.event
-
-
-
       }
     },
     created() {
