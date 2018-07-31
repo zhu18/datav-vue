@@ -151,6 +151,7 @@
     box-sizing: border-box;
     color:#fff;
     font-size: 16px;
+    font-family: consolas;
   }
   .view-code.exp-bottom{
     transform: translateY(0);

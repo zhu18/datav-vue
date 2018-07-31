@@ -15,6 +15,7 @@
 
   const E_viewSize = {
     '1920*1080': '1920*1080',
+    '1920*944': '1920*944',
     '1200*800': '1200*800',
     '800*600': '800*600'
   }
@@ -135,6 +136,7 @@
     background-color: #234;
     background-size: cover;
     background-position: center;
+    transition: all .3s;
   }
 
   .view.selected {
@@ -148,6 +150,7 @@
     bottom:0;
     margin: auto;
     box-shadow: 0 0 20px #000;
+    position: fixed;
   }
   .view-mode .view.selected {
     outline:0

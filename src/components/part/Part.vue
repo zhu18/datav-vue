@@ -166,14 +166,14 @@
           if (this.resizeTimer) clearTimeout(this.resizeTimer);
           this.resizeTimer = setTimeout(() => {
             this.$emit('resize')
-          }, 300);
+          }, 500);
           return
         }
 
         let isModf = !$.eq(cur, old)
         // 其他属性改变触发 stateChange 组件重新绘制
         if(isModf){
-          this.$emit('stateChange', cur)
+          this.$emit('stateChange', {...cur})
         }
 
       }
@@ -222,7 +222,7 @@
           PartServer.updatePart({id: this.id, borderRadius: parseInt(v)})
         })
 
-        g_base.add(part, 'zIndex', 10, 100).name('zIndex').onChange((v) => {
+        g_base.add(part, 'zIndex', 10, 100).name('层高').onChange((v) => {
           PartServer.updatePart({id: this.id, zIndex: parseInt(v)})
         })
         g_base.open()
@@ -483,8 +483,9 @@
   .part .opt {
     visibility: hidden;
     position: absolute;
-    top: -20px;
-    left: -2px;
+    top: -2px;
+    right: 0;
+    z-index: 999;
   }
 
   .part .opt .clone, .part .opt .del {

@@ -21,8 +21,12 @@
   </style>
 </head>
 <body>
-  <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
   <input id="code" placeholder="请输入页面配置" multiple="multiple" onchange="initPage(this.value)" />
+
+  <script src="https://cdn.bootcss.com/jquery/3.3.1/jquery.min.js"></script>
+  <script type="text/javascript" src="http://api.map.baidu.com/api?v=2.0&ak=YEPUIZwPsRL2yONgDfWGGrOK"></script>
+  <script type="text/javascript" src="http://lbsyun.baidu.com/custom/stylelist.js"></script>
+
   <script src="all.js"></script>
 <script>
   $(function(){
@@ -31,8 +35,10 @@
       initPage(lastPage)
   })
    function initPage(opt){
-    var page = new Page({sizeEqualRatio:false})
-    page.init(JSON.parse(opt));
+    var page = new Page()
+     opt=JSON.parse(opt)
+     opt.sizeEqualRatio=true
+    page.init(opt);
     document.getElementById('code').remove()
   }
 </script>

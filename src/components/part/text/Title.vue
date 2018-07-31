@@ -98,6 +98,7 @@
         let p_data = this.setting.data
         let p_event = this.setting.event
 
+        part = {...part}
         let g_font = p_style.addFolder('文字')
         g_font.add(part, 'text').name('文字').onChange((v) => {
           PartServer.updatePart({id: this.id, text: v})

@@ -1,5 +1,6 @@
 <template>
     <div class="header-wrap">
+      <h1><img class="logo" src="@/assets/img/logo.png"/>可视化工具</h1>
       <ul>
         <!-- tag="li" 可以设定 router-link生成什么样的页面元素 -->
         <router-link class="item" tag="li" :to="{name:'layout'}">
@@ -33,17 +34,37 @@
     width: 100%;
     height: 40px;
     line-height: 40px;
-    background-color: #333;
+    background-color: $color-background;
+    h1{
+      float: left;
+      line-height: 40px;
+      padding: 0 10px;
+      .logo{
+        width: 26px;
+        vertical-align: middle;
+        margin-right: 10px;
+      }
+    }
     ul{
-      width: 100%;
+      width: 50%;
+      float: right;
       display: flex;
       justify-content: flex-end;
       li{
         color: $cl-txt;
         padding: 0 20px;
         cursor: pointer;
+        background:$color-background;
+        transition: all .5s;
+        &:hover{
+          background:$color-background-h;
+        }
         &.active{
-          color: red
+          color: $cl-txt;
+          background:$color-highlight-background;
+          &:hover{
+            background:$color-highlight-background-h;
+          }
         }
       }
     }
@@ -51,36 +72,6 @@
   }
 
 
-  //换肤相关
-  .theme-red{
-    .header-wrap{
-      li{
-        &.active{
-          color: red
-        }
-      }
-    }
-  }
-
-  .theme-blue{
-    .header-wrap{
-      li{
-        &.active{
-          color:blue
-        }
-      }
-    }
-  }
-
-  .theme-yellow{
-    .header-wrap{
-      li{
-        &.active{
-          color: yellow
-        }
-      }
-    }
-  }
 
 </style>
 

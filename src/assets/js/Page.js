@@ -13,18 +13,21 @@ let opt = {
 }
 
 class Page {
-  constructor () {
+  constructor (opt) {
     var _opt = {
       //等比缩放
       sizeEqualRatio: false
     }
+    $.extend(true, _opt, opt)
     $.extend(true, this, _opt)
     this.el = $('<div>').attr({id: 'view', class: 'view'}).appendTo('body')
+    // 状态为运行时
+    window.PART_STATUS = 'runtime'
   }
 
   init (opt) {
     $.extend(true, this, opt)
-    this.el.css({backgroundColor:this.viewBackgroundColor,backgroundImage:'url('+this.viewBackgroundImage+')'})
+    this.el.css({backgroundColor: this.viewBackgroundColor, backgroundImage: 'url(' + this.viewBackgroundImage + ')'})
 
     this.parts.forEach((p) => {
       let part = new Part()
@@ -41,8 +44,8 @@ class Page {
   resize (w, h) {
     w = w || this.viewWidth
     h = h || this.viewHeight
-    let ch = document.body.offsetHeight
-    let cw = document.body.offsetWidth
+    let ch = document.body.offsetHeight || document.documentElement.offsetHeight
+    let cw = document.body.offsetWidth || document.documentElement.offsetWidth
     let view = document.getElementById('view')
     view.style.width = w + 'px'
     view.style.height = h + 'px'

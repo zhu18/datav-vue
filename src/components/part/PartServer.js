@@ -9,6 +9,15 @@ import PartChart from '@/components/part/chart/Chart.vue'
 import PartChartLine from '@/components/part/chart/Line.vue'
 import PartChartPie from '@/components/part/chart/Pie.vue'
 import PartChartBar from '@/components/part/chart/Bar.vue'
+// 地图
+import PartMap from '@/components/part/map/Map.vue'
+import PartMapBmap from '@/components/part/map/Bmap.vue'
+import PartMapMap3d from '@/components/part/map/Map3d.vue'
+import PartMapEchartmap from '@/components/part/map/Echartmap.vue'
+// 图片
+import PartImg from '@/components/part/img/Img.vue'
+import PartImgBorder from '@/components/part/img/Border.vue'
+import PartImgImage from '@/components/part/img/Image.vue'
 // 文字
 import PartText from '@/components/part/text/Text.vue'
 import PartTextTitle from '@/components/part/text/Title.vue'
@@ -71,6 +80,13 @@ class PartServer {
       PartChartLine,
       PartChartPie,
       PartChartBar,
+      PartMap,
+      PartMapBmap,
+      PartMapMap3d,
+      PartMapEchartmap,
+      PartImg,
+      PartImgBorder,
+      PartImgImage,
       PartText,
       PartTextTitle
     }
@@ -82,7 +98,7 @@ class PartServer {
 
   //PartChartPie=>[Part,Chart,Pie]
   static typeSplit (type) {
-    return type.match(/([A-Z][a-z]*)/g)
+    return type.match(/([A-Z][a-z0-9_-]*)/g)
   }
 
   // [Part,Chart,Pie] => [Part,PartChart,PartChartPie]
@@ -204,6 +220,17 @@ class PartServer {
     if (isClear) wrap.innerHTML = ''
     wrap.appendChild(gui.domElement)
     return gui
+  }
+
+  //限时执行 某个方法
+  static timeAction(time){
+    let timer=null
+    return function(cb){
+      if (timer) clearTimeout(timer)
+      timer = setTimeout(() => {
+        cb && cb()
+      }, time)
+    }
   }
 }
 

@@ -58,10 +58,8 @@
         let p_data = this.setting.data
         let p_event = this.setting.event
 
-
-        p_data.add(part, 'chartId').name('图表ID').onChange(()=>{
-          return false;
-        }).onFinishChange((v)=>{
+        part={...part}
+        p_data.add(part, 'chartId').name('图表ID').onFinishChange((v)=>{
           PartServer.updatePart({id: this.id, chartId: v})
         })
       }

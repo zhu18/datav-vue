@@ -2,9 +2,20 @@
  * Created by 九次方前端研发部-朱润亚<zry@jusfoun.com> on 2018/6/27.
  */
 import $ from 'jquery'
+
+
+// 图表
 import PartChartLine from '@/components/part/chart/Line.run.js'
 import PartChartPie from '@/components/part/chart/Pie.run.js'
 import PartChartBar from '@/components/part/chart/Bar.run.js'
+// 地图
+import PartMapBmap from '@/components/part/map/Bmap.run.js'
+import PartMapMap3d from '@/components/part/map/Map3d.run.js'
+import PartMapEchartmap from '@/components/part/map/Echartmap.run.js'
+// 图片
+import PartImgBorder from '@/components/part/img/Border.run.js'
+import PartImgImage from '@/components/part/img/Image.run.js'
+// 文字
 import PartTextTitle from '@/components/part/text/Title.run.js'
 
 /*
@@ -28,10 +39,19 @@ class Part {
 
   types () {
     return {
+      //图表
       PartChartLine,
       PartChartPie,
+      PartChartBar,
+      //地图
+      PartMapBmap,
+      PartMapMap3d,
+      PartMapEchartmap,
+      //图片
+      PartImgBorder,
+      PartImgImage,
+      //文字
       PartTextTitle,
-      PartChartBar
     }
   }
 
