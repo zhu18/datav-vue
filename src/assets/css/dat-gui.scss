@@ -16,16 +16,19 @@
   }
 }
 
-.dg{text-shadow: none;}
-.dg.a{margin:0;}
-.dg li:not(.folder){
-  @extend .bg-font;
-  //@include set-height(40px);
-  border-bottom: none;
-  span{
-    font-family: 微软雅黑, 宋体;
+
+.content-right{
+  .dg{text-shadow: none;}
+  .dg.a{margin:0;}
+  .dg li:not(.folder){
+    @extend .bg-font;
+    //@include set-height(40px);
+    border-bottom: none;
+    span{
+      font-family: 微软雅黑, 宋体;
+    }
   }
-}
+
 .dg.main{
   height: 100vh;
 }
@@ -56,3 +59,4 @@
 .dg .cr.function:hover, .dg .cr.boolean:hover{ @extend .bg-font;}
 .dg .close-button{display: none}
 .dg .cr.number input[type=text],.dg .cr.string input[type=text]{  color:$dat-font  }
+}
