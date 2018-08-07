@@ -20,7 +20,7 @@
     methods:{
       runtimeView(){
         localStorage['datav-last-page']=JSON.stringify(this.$store.state)
-        window.open('/static/view.html')
+        window.open('./static/view.html')
       }
     }
   }
