@@ -11,3 +11,4 @@ export default {
     return ChartServer.init({id: opt.chartId, container: opt.contentId})
   }
 }
+

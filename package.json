@@ -12,7 +12,7 @@
     "build-runtime": "node build/build-runtime.js"
   },
   "dependencies": {
-    "9cf-chart": "^1.0.18",
+    "9cf-chart": "^1.0.20",
     "axios": "^0.17.1",
     "babel-polyfill": "^6.26.0",
     "dat.gui": "^0.7.2",
